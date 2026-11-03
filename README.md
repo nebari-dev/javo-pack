@@ -7,6 +7,9 @@ everyone. It is a candidate replacement for the data science pack
 (JupyterHub with jhub-apps); see
 [docs/replacing-data-science-pack.md](docs/replacing-data-science-pack.md).
 
+> [!WARNING]
+> **This pack and Javo are experimental.** Values and resources may change between releases without a migration path, and neither has run in production yet. Use a test cluster.
+
 The chart wraps the `javo` chart and adds what NIC needs: two `NebariApp`
 resources, which make the nebari-operator route Javo's two hosts through the
 shared Envoy Gateway, give them TLS, and provision Javo's Keycloak client.

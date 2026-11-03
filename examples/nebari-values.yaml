@@ -1,21 +1,12 @@
-# Values for a NIC cluster. Replace example.com with the cluster's domain.
-# Release namespace: javo (the client ID below is <namespace>-<nebariapp.name>).
-nebariapp:
-  auth:
-    keycloakGroups:
-      - name: javo-admins
-        members: [admin]   # Keycloak usernames to make Javo platform admins
+# Values for a NIC cluster: its domain. Javo is served at javo.<domain> and
+# javo-apps.<domain> (DNS for both, or a wildcard), and signs in with
+# https://keycloak.<domain>/realms/nebari. NIC's realm admin becomes a Javo
+# admin; list more Keycloak usernames under nebariapp.auth.keycloakGroups.
+global:
+  domain: example.com
 
-javo:
-  publicHost: javo.example.com
-  database:
-    sqlite:
-      storageClass: ""     # the cluster default; on Hetzner NIC: longhorn
-  config:
-    auth:
-      oidc:
-        issuer: https://keycloak.example.com/realms/nebari
-        clientID: javo-javo
-    urls:
-      uiHost: javo.example.com
-      appsHost: javo-apps.example.com
+# With nebi-pack installed (release nebi-pack, namespace nebi):
+# javo:
+#   config:
+#     nebi:
+#       enabled: true

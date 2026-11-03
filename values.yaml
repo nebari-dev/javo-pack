@@ -4,15 +4,20 @@
 #   nebariapp  What this pack adds: the NebariApp resources that make the
 #              nebari-operator route Javo's two hosts, issue their TLS
 #              certificates and provision Javo's Keycloak client.
-#   javo       Passed unchanged to the javo chart (its full reference is the
-#              javo chart's values.yaml). The defaults below are the ones that
+#   javo       Passed to the javo chart (its full reference is the javo
+#              chart's values.yaml). The defaults below are the ones that
 #              differ from the javo chart for a NIC cluster.
 #
-# Five values must be set per cluster (see examples/nebari-values.yaml):
-#   javo.config.urls.uiHost, javo.config.urls.appsHost, javo.publicHost,
-#   javo.config.auth.oidc.issuer, javo.config.auth.oidc.clientID.
-# The chart refuses to render when they are missing or do not match the
-# names the operator gives the Keycloak client.
+# One value must be set per cluster: global.domain (see
+# examples/nebari-values.yaml). The hosts, the Keycloak issuer and the client
+# ID are derived from it and the release namespace; set any of them under
+# javo: to override it. The chart refuses to render values that do not match
+# the names the operator gives the Keycloak client.
+
+global:
+  # The cluster's domain, the one NIC serves Keycloak under
+  # (keycloak.<domain>). Javo gets javo.<domain> and javo-apps.<domain>.
+  domain: ""
 
 # =============================================================================
 # Nebari integration
@@ -23,7 +28,7 @@ nebariapp:
   enabled: true
 
   # Name of the NebariApp for the UI host. The operator derives two names
-  # from it that the javo values below must repeat:
+  # from it that the javo values below repeat (change them with it):
   #   Keycloak client ID: <release namespace>-<name>   (javo.config.auth.oidc.clientID)
   #   client Secret:      <name>-oidc-client           (javo.gateway.oidcClientSecret)
   # A fixed name (not derived from the release) keeps both predictable. The
@@ -57,16 +62,20 @@ nebariapp:
     # forms. Role groups in javo.config.roles use this form.
     groupsFullPath: true
     # Client ID of Nebi's Keycloak client (nebari-nebi-pack:
-    # <nebi namespace>-<nebi NebariApp name>). When set, an Audience mapper
-    # puts it in the ID tokens Javo receives, which Nebi requires before it
-    # trusts them (javo.config.nebi). Required when javo.config.nebi.enabled.
-    nebiAudience: ""
+    # <nebi namespace>-<nebi NebariApp name>). With javo.config.nebi.enabled,
+    # an Audience mapper puts it in the ID tokens Javo receives, which Nebi
+    # requires before it trusts them. The default is nebi-pack's client when
+    # it is installed as release nebi-pack in namespace nebi.
+    nebiAudience: nebi-nebi-pack-nebari-nebi-pack
     # Realm groups the operator makes sure exist, with members it adds
-    # (additive only: it never removes anyone). The default creates the
-    # group that javo.config.roles below makes platform and template admins.
+    # (additive only: it never removes anyone; a username that does not
+    # exist is skipped). The default creates the group that javo.config.roles
+    # below makes platform and template admins, with NIC's realm admin in it:
+    # that user can already change every group in the realm, so this grants
+    # nothing new. List your admins' Keycloak usernames here.
     keycloakGroups:
       - name: javo-admins
-        members: []
+        members: [admin]
 
   # Card on the Nebari landing page.
   landingPage:
@@ -85,12 +94,8 @@ nebariapp:
 # Javo (javo chart values)
 # =============================================================================
 javo:
-  # Published by the javo repository (see README, "Publishing Javo"). The
-  # published javo chart also pins this release's digest (image.digest), which
-  # wins over the tag; leave digest unset here so that pin applies.
-  image:
-    repository: quay.io/nebari/javo
-    tag: "0.1.0"
+  # The image is the one the published javo chart pins (repository, tag and
+  # digest of its release), so it follows the javo dependency in Chart.yaml.
 
   # SQLite: Javo's gateway and controller run in one pod (one replica,
   # Recreate) and the database is a file on a volume kept on uninstall.
@@ -114,11 +119,17 @@ javo:
     secureCookies: true
     # The operator's client Secret: <nebariapp.name>-oidc-client.
     oidcClientSecret: javo-oidc-client
-    # Envoy proxy pod CIDR, so login rate limits key on the real client
-    # (cluster-specific; empty trusts no X-Forwarded-For).
-    trustedProxies: []
+    # Peers whose X-Forwarded-For is believed for the client address that
+    # rate limits key on. Envoy's proxy pods are in the cluster's pod CIDR,
+    # which differs per cluster and cannot be read at render time (Argo CD
+    # renders without the cluster); the private ranges cover every NIC pod
+    # CIDR. Trade-off: any pod in the cluster could set the header and be
+    # counted as another client. Only rate limits read it (webhook deliveries,
+    # and local password sign-in, which is off here; the per-username limit
+    # applies whatever the address). Set your pod CIDR to narrow it.
+    trustedProxies: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
 
-  # The UI host, for Panel and Bokeh websocket origins. Same as uiHost.
+  # The UI host, for Panel and Bokeh websocket origins. Empty: uiHost.
   publicHost: ""
 
   ingress:
@@ -131,11 +142,11 @@ javo:
       local:
         enabled: false
       oidc:
-        # https://<keycloak host>/realms/<realm>, for example
-        # https://keycloak.example.com/realms/nebari
-        issuer: ""
-        # <release namespace>-<nebariapp.name>, for example javo-javo
-        clientID: ""
+        # NIC's realm, the same issuer nebi-pack uses (Nebi needs it to match).
+        # Values here are templates; set a plain URL to override.
+        issuer: "https://keycloak.{{ .Values.global.domain }}/realms/nebari"
+        # The client the operator provisions: <release namespace>-<nebariapp.name>.
+        clientID: "{{ .Release.Namespace }}-javo"
         displayName: Nebari
         scopes: [profile, email]
         groupsClaim: groups
@@ -146,13 +157,27 @@ javo:
       member: {groups: []}
     urls:
       mode: path
-      # Javo's web UI, for example javo.example.com.
-      uiHost: ""
-      # Where apps are served, for example javo-apps.example.com. A host of
-      # its own is what lets people share apps (Javo refuses sharing while
-      # apps share the UI's origin).
-      appsHost: ""
+      # Javo's web UI.
+      uiHost: "javo.{{ .Values.global.domain }}"
+      # Where apps are served. A host of its own is what lets people share
+      # apps (Javo refuses sharing while apps share the UI's origin).
+      appsHost: "javo-apps.{{ .Values.global.domain }}"
       scheme: https
+    storage:
+      home:
+        # One disk per person (ReadWriteOnce). Javo's auto mode picks one
+        # shared drive on Longhorn, NIC's default class, and Longhorn serves
+        # shared volumes over NFS, which needs an NFS client on every node;
+        # NIC does not install one. A disk per person works on every class.
+        mode: perUser
+    # Nebi environments in apps and jobs: true when nebi-pack is installed.
+    # Off by default: Argo CD renders without the cluster, so the chart
+    # cannot see whether Nebi is there.
+    nebi:
+      enabled: false
+      # nebi-pack's Service when it is installed as release nebi-pack in
+      # namespace nebi (its /api/ does its own auth).
+      url: http://nebi-pack-nebari-nebi-pack.nebi.svc.cluster.local
     # Stop apps after an hour without traffic by default (people may pick
     # another timeout or Off per app), like the idle culler of the data
     # science pack frees idle servers.

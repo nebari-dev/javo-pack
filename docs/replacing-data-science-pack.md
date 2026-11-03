@@ -29,7 +29,7 @@ each gap it names the work needed.
 | Admin | JupyterHub admin panel | All apps, Usage, Backups, Storage | No start/stop or impersonation of other users |
 | Operator integration | One NebariApp, app-level auth | Two NebariApps, app-level auth | Two NebariApps, against the spec's "exactly one" |
 | Home data | `claim-<user>` at `/home/jovyan` (uid 1000) | `home-<slug>` at `/home/user` (allocated uid) | No import; needs a migration job |
-| Argo CD | Secrets handled with annotations | Immutable random Secret, Helm-only keep annotations | Needs `ignoreDifferences`; chart should add Argo annotations |
+| Argo CD | Secrets handled with annotations | Controller makes the key; claims carry Argo CD keep annotations | Done |
 
 ## Sign-in and Keycloak
 
@@ -194,9 +194,5 @@ each gap it names the work needed.
 
 ## Argo CD
 
-- The javo chart makes the key of people's secrets once, as an immutable Secret with a random value, and keeps it with `helm.sh/resource-policy: keep` (`javo:deploy/helm/javo/templates/secrets-key.yaml`).
-  - Argo CD renders without cluster access, so each render has a new value.
-  - This pack's Argo CD example ignores that Secret's data (`pack:README.md`, "Install with Argo CD": `ignoreDifferences` with `RespectIgnoreDifferences=true`).
-- The workspace namespace and the SQLite claim carry only Helm's keep annotation, which Argo CD does not read.
-  - **Risk:** a cascading delete of the Application, or a prune, removes them, homes included.
-  - **Work, javo chart:** add `argocd.argoproj.io/sync-options: Prune=false,Delete=false` next to `helm.sh/resource-policy: keep`, and an `imagePullSecrets` value for private registries.
+- The chart renders no random Secret: Javo's controller makes the key of people's secrets on first start, so an Application needs no `ignoreDifferences`.
+- The claims and the key Secret carry `argocd.argoproj.io/sync-options: Prune=false,Delete=false` next to Helm's keep annotation, so a prune or a cascading delete of the Application leaves them, homes included.

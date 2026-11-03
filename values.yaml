@@ -89,8 +89,8 @@ javo:
   # published javo chart also pins this release's digest (image.digest), which
   # wins over the tag; leave digest unset here so that pin applies.
   image:
-    repository: ghcr.io/nebari-dev/javo
-    tag: "0.2.14"
+    repository: quay.io/nebari/javo
+    tag: "0.1.0"
 
   # SQLite: Javo's gateway and controller run in one pod (one replica,
   # Recreate) and the database is a file on a volume kept on uninstall.

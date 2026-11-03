@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  packages: read
 
 jobs:
   no-emulation:
@@ -34,15 +33,9 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
 
+      # oci://quay.io/nebari/charts/javo is public.
       - name: Fetch the javo chart
-        env:
-          ACTOR: ${{ github.actor }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # ghcr.io/nebari-dev/charts/javo is private; this repository has read
-        # access to it (the package's Actions access).
-        run: |
-          printf '%s' "$TOKEN" | helm registry login ghcr.io --username "$ACTOR" --password-stdin
-          helm dependency build .
+        run: helm dependency build .
 
       - name: Helm lint
         run: helm lint . -n javo -f examples/nebari-values.yaml

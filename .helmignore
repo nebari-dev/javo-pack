@@ -4,7 +4,6 @@
 .editorconfig
 dev/
 docs/
-deploy-examples/
 examples/
 pack-metadata.yaml
 *.md

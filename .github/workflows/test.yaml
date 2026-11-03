@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  packages: read
 
 jobs:
   # The pack on a kind cluster with the Nebari stack (MetalLB, Envoy Gateway,
@@ -28,34 +27,15 @@ jobs:
         with:
           install_only: true
 
+      # oci://quay.io/nebari/charts/javo is public.
       - name: Fetch the javo chart
-        env:
-          ACTOR: ${{ github.actor }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # ghcr.io/nebari-dev/charts/javo is private; this repository has read
-        # access to it (the package's Actions access).
-        run: |
-          printf '%s' "$TOKEN" | helm registry login ghcr.io --username "$ACTOR" --password-stdin
-          helm dependency build .
+        run: helm dependency build .
 
       - name: Create the cluster and the Nebari stack
         run: make -C dev cluster
 
-      # ghcr.io/nebari-dev/javo is private: the cluster pulls it with this run's
-      # token (the package grants this repository read access).
-      - name: Pull secret for the javo image
-        env:
-          KUBECONFIG: ${{ github.workspace }}/dev/.cache/kubeconfig
-          ACTOR: ${{ github.actor }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          kubectl create namespace javo --dry-run=client -o yaml | kubectl apply -f -
-          kubectl -n javo create secret docker-registry ghcr-javo \
-            --docker-server=ghcr.io --docker-username="$ACTOR" --docker-password="$TOKEN" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Install the pack
-        run: make -C dev up HELM_ARGS='--set javo.imagePullSecrets[0].name=ghcr-javo'
+        run: make -C dev up
 
       - name: Sign in through the gateway and open an app
         run: make -C dev verify

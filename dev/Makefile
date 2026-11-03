@@ -38,7 +38,7 @@ CHART_DIR      := ..
 NAMESPACE      ?= javo
 RELEASE        ?= javo-pack
 JAVO_CHART_DIR ?=
-JAVO_IMAGE     ?= ghcr.io/nebari-dev/javo:0.1.0
+JAVO_IMAGE     ?= quay.io/nebari/javo:0.1.0
 VALUES         ?= ../examples/kind-values.yaml
 # Extra helm flags, for example -f my-overrides.yaml
 HELM_ARGS      ?=

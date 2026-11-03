@@ -6,7 +6,7 @@
   </picture>
 </p>
 
-<p align="center"><b>Javo on Nebari: notebooks, apps and jobs for data teams.</b></p>
+<p align="center"><b>Javo on Nebari: the agent-first data science platform.</b></p>
 
 > [!WARNING]
 > **This pack and Javo are experimental.** Values and resources may change between releases without a migration path, and neither has run in production yet. Use a test cluster.

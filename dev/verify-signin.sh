@@ -106,9 +106,17 @@ echo "  $(cat "$work/me.json")"
 # APP_CHECK=0 (it pulls the nginx image on first run).
 if [ "${APP_CHECK:-1}" = 1 ]; then
   step "Javo creates an app (Container image, nginx)"
-  c -o "$work/app.json" -w '%{http_code}' -H 'Content-Type: application/json' \
-    -d "{\"displayName\":\"Pack check $(date +%s)\",\"template\":\"container\",\"image\":\"$APP_IMAGE\",\"port\":8080}" \
-    "https://$UI/api/workspaces" >"$work/code"
+  # The app has no login of its own, so Javo creates it only once its
+  # NetworkPolicy probe has seen the policy enforced. The first probe runs as
+  # Javo starts and can end Unknown; it tries again after 30 s, then 60 s.
+  for try in $(seq 1 12); do
+    c -o "$work/app.json" -w '%{http_code}' -H 'Content-Type: application/json' \
+      -d "{\"displayName\":\"Pack check $(date +%s)\",\"template\":\"container\",\"image\":\"$APP_IMAGE\",\"port\":8080}" \
+      "https://$UI/api/workspaces" >"$work/code"
+    grep -q 'does not enforce NetworkPolicy' "$work/app.json" || break
+    [ "$try" = 1 ] && echo "  waiting for Javo's NetworkPolicy probe"
+    sleep 10
+  done
   case "$(cat "$work/code")" in 200|201) ok ;; *) die "$(cat "$work/code") $(cat "$work/app.json")" ;; esac
   name=$(sed -n 's/.*"name":"\([^"]*\)".*/\1/p' "$work/app.json" | head -1)
 

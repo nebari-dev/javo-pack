@@ -20,7 +20,7 @@ is refused without it), hence the second one. It carries no auth.
 {{- if .Values.nebariapp.enabled }}
 {{- include "javo-pack.validate" . }}
 {{- $na := .Values.nebariapp }}
-{{- $urls := .Values.javo.config.urls }}
+{{- $uiHost := include "javo-pack.uiHost" . }}
 apiVersion: reconcilers.nebari.dev/v1
 kind: NebariApp
 metadata:
@@ -29,7 +29,7 @@ metadata:
   labels:
     {{- include "javo-pack.labels" . | nindent 4 }}
 spec:
-  hostname: {{ $urls.uiHost }}
+  hostname: {{ $uiHost }}
   service:
     name: {{ $na.service.name }}
     port: {{ $na.service.port }}
@@ -65,6 +65,7 @@ spec:
             id.token.claim: "true"
             access.token.claim: "true"
             userinfo.token.claim: "true"
+        {{- if (.Values.javo.config.nebi).enabled }}
         {{- with $na.auth.nebiAudience }}
         - name: nebi-audience
           protocolMapper: oidc-audience-mapper
@@ -72,6 +73,7 @@ spec:
             included.client.audience: {{ . | quote }}
             id.token.claim: "true"
             access.token.claim: "true"
+        {{- end }}
         {{- end }}
   {{- with $na.landingPage }}
   landingPage:
@@ -81,7 +83,7 @@ spec:
     {{- with .description }}
     description: {{ . | quote }}
     {{- end }}
-    icon: {{ .icon | default (printf "https://%s/favicon.svg" $urls.uiHost) | quote }}
+    icon: {{ .icon | default (printf "https://%s/favicon.svg" $uiHost) | quote }}
     {{- with .category }}
     category: {{ . | quote }}
     {{- end }}

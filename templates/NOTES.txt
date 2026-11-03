@@ -1,7 +1,7 @@
 {{- if .Values.nebariapp.enabled }}
 Javo is being deployed behind the Nebari gateway.
 
-  Web UI:  https://{{ .Values.javo.config.urls.uiHost }}
+  Web UI:  https://{{ include "javo-pack.uiHost" . }}
 {{- with include "javo-pack.appsHost" . }}
   Apps:    https://{{ . }}
 {{- else }}

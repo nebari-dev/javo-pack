@@ -26,12 +26,42 @@ NebariApp (nebari-operator: <namespace>-<name> and <name>-oidc-client).
 {{- end }}
 
 {{/*
+A javo value as the javo chart renders it: values may be templates of
+.Values.global and .Release, which read the same here. (list $ value)
+*/}}
+{{- define "javo-pack.tpl" -}}
+{{- $v := index . 1 -}}
+{{- if $v }}{{ tpl (toString $v) (index . 0) }}{{ end -}}
+{{- end }}
+
+{{- define "javo-pack.uiHost" -}}
+{{- include "javo-pack.tpl" (list . .Values.javo.config.urls.uiHost) -}}
+{{- end }}
+
+{{- define "javo-pack.issuer" -}}
+{{- $oidc := (default (dict) .Values.javo.config.auth).oidc | default (dict) -}}
+{{- include "javo-pack.tpl" (list . $oidc.issuer) -}}
+{{- end }}
+
+{{/*
 The apps host, when apps are served on a host of their own: empty otherwise.
 */}}
 {{- define "javo-pack.appsHost" -}}
-{{- $urls := .Values.javo.config.urls -}}
-{{- if and $urls.appsHost (ne $urls.appsHost $urls.uiHost) -}}
-{{- $urls.appsHost -}}
+{{- $apps := include "javo-pack.tpl" (list . .Values.javo.config.urls.appsHost) -}}
+{{- if and $apps (ne $apps (include "javo-pack.uiHost" .)) -}}
+{{- $apps -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Fails unless host is a DNS name with no empty label: a derived host is
+javo. or keycloak./ when global.domain is not set. (list key host)
+*/}}
+{{- define "javo-pack.requireHost" -}}
+{{- $key := index . 0 -}}
+{{- $host := index . 1 -}}
+{{- if not (regexMatch "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+(:[0-9]+)?$" $host) -}}
+{{- fail (printf "%s is %q: set global.domain to the cluster's domain (for example example.com), or set %s" $key $host $key) -}}
 {{- end -}}
 {{- end }}
 
@@ -44,24 +74,25 @@ javo values are literal and checked here instead.
 {{- $j := .Values.javo -}}
 {{- $urls := $j.config.urls -}}
 {{- $oidc := (default (dict) $j.config.auth).oidc | default (dict) -}}
-{{- if not $urls.uiHost -}}
-{{- fail "javo.config.urls.uiHost is required: Javo's host, for example javo.example.com" -}}
+{{- $uiHost := include "javo-pack.uiHost" . -}}
+{{- include "javo-pack.requireHost" (list "javo.config.urls.uiHost" $uiHost) -}}
+{{- with include "javo-pack.tpl" (list . $urls.appsHost) -}}
+{{- include "javo-pack.requireHost" (list "javo.config.urls.appsHost" .) -}}
 {{- end -}}
 {{- if ne (default "path" $urls.mode) "path" -}}
 {{- fail "javo.config.urls.mode must be path: subdomain mode needs a wildcard host, which a NebariApp cannot route" -}}
 {{- end -}}
-{{- if not $oidc.issuer -}}
-{{- fail "javo.config.auth.oidc.issuer is required: the Keycloak realm URL, for example https://keycloak.example.com/realms/nebari" -}}
-{{- end -}}
+{{- $issuer := include "javo-pack.issuer" . -}}
+{{- include "javo-pack.requireHost" (list "javo.config.auth.oidc.issuer" ((urlParse $issuer).host | default "")) -}}
 {{- $clientID := include "javo-pack.clientID" . -}}
-{{- if ne (toString $oidc.clientID) $clientID -}}
+{{- if ne (include "javo-pack.tpl" (list . $oidc.clientID)) $clientID -}}
 {{- fail (printf "javo.config.auth.oidc.clientID must be %q, the client the operator provisions for NebariApp %q in namespace %q" $clientID .Values.nebariapp.name .Release.Namespace) -}}
 {{- end -}}
 {{- $secret := include "javo-pack.clientSecretName" . -}}
 {{- if ne (toString $j.gateway.oidcClientSecret) $secret -}}
 {{- fail (printf "javo.gateway.oidcClientSecret must be %q, the Secret the operator writes Javo's client secret to" $secret) -}}
 {{- end -}}
-{{- if and $j.publicHost (ne $j.publicHost $urls.uiHost) -}}
+{{- if and $j.publicHost (ne $j.publicHost $uiHost) -}}
 {{- fail "javo.publicHost must equal javo.config.urls.uiHost (or be empty)" -}}
 {{- end -}}
 {{- if and ((default (dict) $j.config.nebi).enabled) (not .Values.nebariapp.auth.nebiAudience) -}}

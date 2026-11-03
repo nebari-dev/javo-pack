@@ -1,0 +1,121 @@
+{{- /*
+Two NebariApps, one per host, both pointing at the javo chart's gateway
+Service:
+
+  <nebariapp.name>      the UI host (javo.config.urls.uiHost). The operator
+                        routes it, issues its certificate, and provisions
+                        Javo's Keycloak client and its Secret. Javo signs
+                        people in itself (authorization code flow with PKCE
+                        at /auth/oidc/callback), so the gateway enforces
+                        nothing here: enforceAtGateway is false.
+  <nebariapp.appsName>  the apps host (javo.config.urls.appsHost), routing and
+                        TLS only. Javo checks every request on it against its
+                        own session and the app's sharing; a gateway login in
+                        front would stop anonymous visitors of public apps.
+
+The Nebari pack specification asks for exactly one NebariApp per pack. A
+NebariApp has one hostname, and Javo needs a second origin for apps (sharing
+is refused without it), hence the second one. It carries no auth.
+*/ -}}
+{{- if .Values.nebariapp.enabled }}
+{{- include "javo-pack.validate" . }}
+{{- $na := .Values.nebariapp }}
+{{- $urls := .Values.javo.config.urls }}
+apiVersion: reconcilers.nebari.dev/v1
+kind: NebariApp
+metadata:
+  name: {{ $na.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "javo-pack.labels" . | nindent 4 }}
+spec:
+  hostname: {{ $urls.uiHost }}
+  service:
+    name: {{ $na.service.name }}
+    port: {{ $na.service.port }}
+  gateway: {{ $na.gateway }}
+  routing:
+    routes:
+      - pathPrefix: /
+    tls:
+      enabled: true
+  auth:
+    enabled: true
+    provider: keycloak
+    provisionClient: true
+    enforceAtGateway: false
+    redirectURI: /auth/oidc/callback
+    {{- with $na.auth.scopes }}
+    scopes:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    keycloakConfig:
+      {{- with $na.auth.keycloakGroups }}
+      groups:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # Listing mappers replaces the operator's default group mapper, so the
+      # groups mapper is declared here too.
+      protocolMappers:
+        - name: groups
+          protocolMapper: oidc-group-membership-mapper
+          config:
+            claim.name: groups
+            full.path: {{ $na.auth.groupsFullPath | toString | quote }}
+            id.token.claim: "true"
+            access.token.claim: "true"
+            userinfo.token.claim: "true"
+        {{- with $na.auth.nebiAudience }}
+        - name: nebi-audience
+          protocolMapper: oidc-audience-mapper
+          config:
+            included.client.audience: {{ . | quote }}
+            id.token.claim: "true"
+            access.token.claim: "true"
+        {{- end }}
+  {{- with $na.landingPage }}
+  landingPage:
+    enabled: {{ .enabled }}
+    {{- if .enabled }}
+    displayName: {{ .displayName | quote }}
+    {{- with .description }}
+    description: {{ . | quote }}
+    {{- end }}
+    icon: {{ .icon | default (printf "https://%s/favicon.svg" $urls.uiHost) | quote }}
+    {{- with .category }}
+    category: {{ . | quote }}
+    {{- end }}
+    {{- if kindIs "float64" .priority }}
+    priority: {{ .priority }}
+    {{- end }}
+    {{- with .healthCheck }}
+    healthCheck:
+      enabled: {{ .enabled }}
+      {{- with .path }}
+      path: {{ . | quote }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+{{- with include "javo-pack.appsHost" . }}
+---
+apiVersion: reconcilers.nebari.dev/v1
+kind: NebariApp
+metadata:
+  name: {{ $na.appsName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "javo-pack.labels" $ | nindent 4 }}
+spec:
+  hostname: {{ . }}
+  service:
+    name: {{ $na.service.name }}
+    port: {{ $na.service.port }}
+  gateway: {{ $na.gateway }}
+  routing:
+    routes:
+      - pathPrefix: /
+    tls:
+      enabled: true
+{{- end }}
+{{- end }}

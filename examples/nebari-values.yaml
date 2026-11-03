@@ -1,0 +1,21 @@
+# Values for a NIC cluster. Replace example.com with the cluster's domain.
+# Release namespace: javo (the client ID below is <namespace>-<nebariapp.name>).
+nebariapp:
+  auth:
+    keycloakGroups:
+      - name: javo-admins
+        members: [admin]   # Keycloak usernames to make Javo platform admins
+
+javo:
+  publicHost: javo.example.com
+  database:
+    sqlite:
+      storageClass: ""     # the cluster default; on Hetzner NIC: longhorn
+  config:
+    auth:
+      oidc:
+        issuer: https://keycloak.example.com/realms/nebari
+        clientID: javo-javo
+    urls:
+      uiHost: javo.example.com
+      appsHost: javo-apps.example.com

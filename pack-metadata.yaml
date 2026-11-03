@@ -1,0 +1,48 @@
+# pack-metadata.yaml
+#
+# Read by the Nebari pack dashboard (https://github.com/nebari-dev/software-pack-dashboard)
+# from the default branch. Schema:
+#   https://github.com/nebari-dev/software-pack-dashboard/blob/main/schema/pack-metadata.schema.json
+
+# ----------------------------------------------------------------------------
+# Required fields
+# ----------------------------------------------------------------------------
+
+# Must equal the GitHub repo name exactly.
+name: javo-pack
+
+display_name: Javo Pack
+
+# experimental | alpha | beta | ga
+# Experimental: new, and run so far on one NIC test cluster.
+level: experimental
+
+# GitHub username of the accountable engineer. No "@" prefix.
+owner: aktech
+
+deprecated: false
+
+# Required (non-null) only at level: ga.
+product_owner: null
+
+# ----------------------------------------------------------------------------
+# Optional fields
+# ----------------------------------------------------------------------------
+
+description: Javo (apps, notebooks and scheduled jobs for teams) on Nebari, signing in with Keycloak through the nebari-operator.
+
+# full: NebariApps cover routing and TLS for both hosts, Keycloak client
+# provisioning (groups, audience mapper, realm group) and a landing-page tile.
+nebariapp_integration: full
+
+scope:
+  # nebariapp.enabled=false renders only the javo chart; Ingress, TLS and the
+  # OIDC client then come from the javo values.
+  standalone-supported: true
+
+docs_site: false
+
+demo_notes: |
+  Two hosts per install (UI and apps). Javo signs people in itself with the
+  operator-provisioned Keycloak client; the gateway enforces no auth. Nebi
+  environments need nebariapp.auth.nebiAudience set to nebi-pack's client ID.

@@ -1,0 +1,160 @@
+# Values for javo-pack.
+#
+# Two parts:
+#   nebariapp  What this pack adds: the NebariApp resources that make the
+#              nebari-operator route Javo's two hosts, issue their TLS
+#              certificates and provision Javo's Keycloak client.
+#   javo       Passed unchanged to the javo chart (its full reference is the
+#              javo chart's values.yaml). The defaults below are the ones that
+#              differ from the javo chart for a NIC cluster.
+#
+# Five values must be set per cluster (see examples/nebari-values.yaml):
+#   javo.config.urls.uiHost, javo.config.urls.appsHost, javo.publicHost,
+#   javo.config.auth.oidc.issuer, javo.config.auth.oidc.clientID.
+# The chart refuses to render when they are missing or do not match the
+# names the operator gives the Keycloak client.
+
+# =============================================================================
+# Nebari integration
+# =============================================================================
+nebariapp:
+  # false: no NebariApp is rendered and the javo values are used as they are
+  # (bring your own Ingress, TLS and OIDC client).
+  enabled: true
+
+  # Name of the NebariApp for the UI host. The operator derives two names
+  # from it that the javo values below must repeat:
+  #   Keycloak client ID: <release namespace>-<name>   (javo.config.auth.oidc.clientID)
+  #   client Secret:      <name>-oidc-client           (javo.gateway.oidcClientSecret)
+  # A fixed name (not derived from the release) keeps both predictable. The
+  # javo chart's resources have fixed names too, so one Javo per namespace.
+  name: javo
+
+  # Name of the NebariApp for the apps host (javo.config.urls.appsHost).
+  # Rendered only when appsHost is set and differs from uiHost.
+  appsName: javo-apps
+
+  # The javo chart's gateway Service (name and port are fixed by that chart).
+  service:
+    name: javo-gateway
+    port: 80
+
+  # Shared Gateway: public or internal.
+  gateway: public
+
+  auth:
+    # Scopes the operator assigns to Javo's client as default scopes.
+    # Javo itself asks for javo.config.auth.oidc.scopes.
+    scopes:
+      - openid
+      - profile
+      - email
+    # Group-membership mapper on Javo's client, claim "groups", in the ID
+    # token (Javo reads groups from the ID token). true: groups look like
+    # /javo-admins. Keep it the same as any realm-wide default "groups"
+    # scope (the full path is what such a scope emits when the data science
+    # pack's RBAC bootstrap manages it), or every group appears in both
+    # forms. Role groups in javo.config.roles use this form.
+    groupsFullPath: true
+    # Client ID of Nebi's Keycloak client (nebari-nebi-pack:
+    # <nebi namespace>-<nebi NebariApp name>). When set, an Audience mapper
+    # puts it in the ID tokens Javo receives, which Nebi requires before it
+    # trusts them (javo.config.nebi). Required when javo.config.nebi.enabled.
+    nebiAudience: ""
+    # Realm groups the operator makes sure exist, with members it adds
+    # (additive only: it never removes anyone). The default creates the
+    # group that javo.config.roles below makes platform and template admins.
+    keycloakGroups:
+      - name: javo-admins
+        members: []
+
+  # Card on the Nebari landing page.
+  landingPage:
+    enabled: true
+    displayName: Javo
+    description: Apps, notebooks and scheduled jobs for your team
+    # Empty: https://<uiHost>/favicon.svg (served by Javo without sign-in).
+    icon: ""
+    category: Data Science
+    priority: 2
+    healthCheck:
+      enabled: true
+      path: /healthz
+
+# =============================================================================
+# Javo (javo chart values)
+# =============================================================================
+javo:
+  # Published by the javo repository (see README, "Publishing Javo"). The
+  # published javo chart also pins this release's digest (image.digest), which
+  # wins over the tag; leave digest unset here so that pin applies.
+  image:
+    repository: ghcr.io/nebari-dev/javo
+    tag: "0.2.14"
+
+  # SQLite: Javo's gateway and controller run in one pod (one replica,
+  # Recreate) and the database is a file on a volume kept on uninstall.
+  # It needs nothing else in the cluster, and one replica serves a team of
+  # the size a data science pack serves today. Use Postgres (engine:
+  # postgres, postgres.dsnSecret) for more than one replica or when the
+  # cluster already runs a managed Postgres (CloudNativePG on NIC).
+  database:
+    engine: sqlite
+    sqlite:
+      size: 5Gi
+      # Empty: the cluster's default StorageClass.
+      storageClass: ""
+    # Database copies every night at 02:00, the newest 7 kept (the javo
+    # chart's default). Empty turns them off.
+    backup:
+      schedule: "0 2 * * *"
+
+  gateway:
+    # The gateway is reached over HTTPS through Envoy: Secure session cookie.
+    secureCookies: true
+    # The operator's client Secret: <nebariapp.name>-oidc-client.
+    oidcClientSecret: javo-oidc-client
+    # Envoy proxy pod CIDR, so login rate limits key on the real client
+    # (cluster-specific; empty trusts no X-Forwarded-For).
+    trustedProxies: []
+
+  # The UI host, for Panel and Bokeh websocket origins. Same as uiHost.
+  publicHost: ""
+
+  ingress:
+    # Routing and TLS come from the NebariApps, never an Ingress.
+    enabled: false
+
+  config:
+    auth:
+      # Nebari users sign in with Keycloak only.
+      local:
+        enabled: false
+      oidc:
+        # https://<keycloak host>/realms/<realm>, for example
+        # https://keycloak.example.com/realms/nebari
+        issuer: ""
+        # <release namespace>-<nebariapp.name>, for example javo-javo
+        clientID: ""
+        displayName: Nebari
+        scopes: [profile, email]
+        groupsClaim: groups
+    roles:
+      platformAdmin: {groups: [/javo-admins]}
+      templateAdmin: {groups: [/javo-admins]}
+      # Empty: everyone who can sign in to the realm is a member.
+      member: {groups: []}
+    urls:
+      mode: path
+      # Javo's web UI, for example javo.example.com.
+      uiHost: ""
+      # Where apps are served, for example javo-apps.example.com. A host of
+      # its own is what lets people share apps (Javo refuses sharing while
+      # apps share the UI's origin).
+      appsHost: ""
+      scheme: https
+    # Stop apps after an hour without traffic by default (people may pick
+    # another timeout or Off per app), like the idle culler of the data
+    # science pack frees idle servers.
+    idleStop:
+      defaultMinutes: 60

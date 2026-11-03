@@ -1,0 +1,74 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  # The pack on a kind cluster with the Nebari stack (MetalLB, Envoy Gateway,
+  # cert-manager, Keycloak, nebari-operator), then a Keycloak sign-in to Javo
+  # through the gateway and an app opened on the apps host (dev/verify-signin.sh).
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+
+      - name: Install kind
+        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+        with:
+          install_only: true
+
+      - name: Fetch the javo chart
+        env:
+          ACTOR: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # ghcr.io/nebari-dev/charts/javo is private; this repository has read
+        # access to it (the package's Actions access).
+        run: |
+          printf '%s' "$TOKEN" | helm registry login ghcr.io --username "$ACTOR" --password-stdin
+          helm dependency build .
+
+      - name: Create the cluster and the Nebari stack
+        run: make -C dev cluster
+
+      # ghcr.io/nebari-dev/javo is private: the cluster pulls it with this run's
+      # token (the package grants this repository read access).
+      - name: Pull secret for the javo image
+        env:
+          KUBECONFIG: ${{ github.workspace }}/dev/.cache/kubeconfig
+          ACTOR: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          kubectl create namespace javo --dry-run=client -o yaml | kubectl apply -f -
+          kubectl -n javo create secret docker-registry ghcr-javo \
+            --docker-server=ghcr.io --docker-username="$ACTOR" --docker-password="$TOKEN" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Install the pack
+        run: make -C dev up HELM_ARGS='--set javo.imagePullSecrets[0].name=ghcr-javo'
+
+      - name: Sign in through the gateway and open an app
+        run: make -C dev verify
+
+      - name: Debug info on failure
+        if: failure()
+        env:
+          KUBECONFIG: ${{ github.workspace }}/dev/.cache/kubeconfig
+        run: |
+          kubectl get nebariapp -A -o wide || true
+          kubectl describe nebariapp -n javo || true
+          kubectl get httproute,securitypolicy -A || true
+          kubectl get pods -A || true
+          kubectl logs -n javo deploy/javo --all-containers --tail=200 || true
+          kubectl logs -n nebari-operator-system deploy/nebari-operator-controller-manager --tail=200 || true
+          kubectl get events -A --sort-by=.lastTimestamp | tail -60 || true

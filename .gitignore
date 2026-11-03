@@ -1,0 +1,17 @@
+# Helm dependencies (helm dependency build, or make -C dev vendor-javo)
+charts/
+*.tgz
+
+# Dev cache (cloned nebari-operator, kubeconfig)
+dev/.cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

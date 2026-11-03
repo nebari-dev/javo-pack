@@ -1,0 +1,17 @@
+apiVersion: v2
+name: javo-pack
+description: Javo (apps, notebooks and jobs for teams) on Nebari, with routing, TLS and Keycloak sign-in from the nebari-operator
+type: application
+version: 0.2.14
+# Version of Javo shipped by the javo dependency pinned below.
+appVersion: "0.2.14"
+home: https://github.com/nebari-dev/javo-pack
+sources:
+  - https://github.com/nebari-dev/javo-pack
+  - https://github.com/nebari-dev/javo
+dependencies:
+  # Published by the javo repository's release workflow (see README,
+  # "Publishing Javo"). Until then, vendor it locally: make -C dev vendor-javo.
+  - name: javo
+    version: 0.2.14
+    repository: oci://ghcr.io/nebari-dev/charts

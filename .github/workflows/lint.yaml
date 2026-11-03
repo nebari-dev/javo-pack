@@ -1,0 +1,73 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  no-emulation:
+    name: No emulation in workflows
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Builds cross-compile on the runner's own platform; emulated builds
+      # are slow and never allowed in any workflow.
+      - run: |
+          if git grep -n -i -E 'q[e]mu|b[i]nfmt' -- '*.yml' '*.yaml'; then
+            echo "::error::emulated build setup found in a workflow"
+            exit 1
+          fi
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+
+      - name: Fetch the javo chart
+        env:
+          ACTOR: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # ghcr.io/nebari-dev/charts/javo is private; this repository has read
+        # access to it (the package's Actions access).
+        run: |
+          printf '%s' "$TOKEN" | helm registry login ghcr.io --username "$ACTOR" --password-stdin
+          helm dependency build .
+
+      - name: Helm lint
+        run: helm lint . -n javo -f examples/nebari-values.yaml
+
+      - name: Helm template (NebariApp enabled)
+        run: helm template javo-pack . -n javo -f examples/nebari-values.yaml
+
+      - name: Helm template (standalone, NebariApp disabled)
+        run: helm template javo-pack . -n javo --set nebariapp.enabled=false
+
+      # The chart refuses values that would leave Javo pointing at a client or
+      # Secret the operator does not create.
+      - name: Mismatched values are refused
+        run: |
+          fails() {
+            if helm template javo-pack . -f examples/nebari-values.yaml "$@" >/dev/null 2>&1; then
+              echo "rendered, but should have failed: $*"; exit 1
+            fi
+          }
+          fails -n javo --set javo.config.auth.oidc.clientID=wrong
+          fails -n javo --set javo.gateway.oidcClientSecret=wrong
+          fails -n javo --set javo.config.urls.uiHost=
+          fails -n javo --set javo.config.auth.oidc.issuer=
+          fails -n javo --set javo.config.urls.mode=subdomain --set javo.config.urls.appsDomain=apps.example.com
+          fails -n javo --set javo.config.nebi.enabled=true --set javo.config.nebi.url=http://nebi
+          # The client ID follows the release namespace.
+          fails -n other
+          echo "all mismatches refused"

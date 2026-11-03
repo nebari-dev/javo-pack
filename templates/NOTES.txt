@@ -1,0 +1,22 @@
+{{- if .Values.nebariapp.enabled }}
+Javo is being deployed behind the Nebari gateway.
+
+  Web UI:  https://{{ .Values.javo.config.urls.uiHost }}
+{{- with include "javo-pack.appsHost" . }}
+  Apps:    https://{{ . }}
+{{- else }}
+  Apps:    on the UI host (sharing beyond Private is refused until
+           javo.config.urls.appsHost is set)
+{{- end }}
+
+Sign-in goes through Keycloak client {{ include "javo-pack.clientID" . }}.
+Check the operator has routed both hosts and provisioned the client:
+
+  kubectl get nebariapp -n {{ .Release.Namespace }}
+  kubectl get secret {{ include "javo-pack.clientSecretName" . }} -n {{ .Release.Namespace }}
+
+The namespace needs the label nebari.dev/managed=true.
+{{- else }}
+Javo is deployed without the nebari-operator: routing, TLS and the OIDC
+client come from the javo values (javo.ingress, javo.config.auth).
+{{- end }}

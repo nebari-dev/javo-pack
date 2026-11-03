@@ -1,0 +1,21 @@
+# Values for the local kind cluster made by dev/Makefile (Keycloak runs in
+# dev mode over plain HTTP inside the cluster and is reached at its Service
+# name; verify-signin.sh reaches every host through port-forwards).
+nebariapp:
+  auth:
+    keycloakGroups:
+      - name: javo-admins
+        members: [admin]
+
+javo:
+  image:
+    pullPolicy: IfNotPresent
+  publicHost: javo.nebari.local
+  config:
+    auth:
+      oidc:
+        issuer: http://keycloak-keycloakx-http.keycloak.svc.cluster.local/auth/realms/nebari
+        clientID: javo-javo
+    urls:
+      uiHost: javo.nebari.local
+      appsHost: javo-apps.nebari.local

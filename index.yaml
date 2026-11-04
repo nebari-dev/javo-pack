@@ -2,8 +2,27 @@ apiVersion: v1
 entries:
   javo-pack:
   - apiVersion: v2
+    appVersion: 0.2.8
+    created: "2026-11-04T00:18:32.989868622Z"
+    dependencies:
+    - name: javo
+      repository: oci://quay.io/nebari/charts
+      version: 0.2.8
+    description: Javo (apps, notebooks and jobs for teams) on Nebari, with routing,
+      TLS and Keycloak sign-in from the nebari-operator
+    digest: d58534c9d5b3243b8c1a338b1eaa396937c7d50bf0aa574e5aae6403770b8aa7
+    home: https://github.com/nebari-dev/javo-pack
+    name: javo-pack
+    sources:
+    - https://github.com/nebari-dev/javo-pack
+    - https://github.com/nebari-dev/javo
+    type: application
+    urls:
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.8/javo-pack-0.2.8.tgz
+    version: 0.2.8
+  - apiVersion: v2
     appVersion: 0.2.6
-    created: "2026-11-03T21:07:44.987265026Z"
+    created: "2026-11-04T00:18:32.986374291Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -18,11 +37,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.6/javo-pack-0.2.6.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.8/javo-pack-0.2.6.tgz
     version: 0.2.6
   - apiVersion: v2
     appVersion: 0.2.5
-    created: "2026-11-03T21:07:44.98461971Z"
+    created: "2026-11-04T00:18:32.983876097Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -37,11 +56,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.6/javo-pack-0.2.5.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.8/javo-pack-0.2.5.tgz
     version: 0.2.5
   - apiVersion: v2
     appVersion: 0.2.4
-    created: "2026-11-03T21:07:44.98076936Z"
+    created: "2026-11-04T00:18:32.981336145Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -56,11 +75,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.6/javo-pack-0.2.4.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.8/javo-pack-0.2.4.tgz
     version: 0.2.4
   - apiVersion: v2
     appVersion: 0.2.2
-    created: "2026-11-03T21:07:44.978042372Z"
+    created: "2026-11-04T00:18:32.977513202Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -75,11 +94,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.6/javo-pack-0.2.2.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.8/javo-pack-0.2.2.tgz
     version: 0.2.2
   - apiVersion: v2
     appVersion: 0.2.1
-    created: "2026-11-03T21:07:44.975256745Z"
+    created: "2026-11-04T00:18:32.974789378Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -94,11 +113,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.6/javo-pack-0.2.1.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.8/javo-pack-0.2.1.tgz
     version: 0.2.1
   - apiVersion: v2
     appVersion: 0.2.0
-    created: "2026-11-03T21:07:44.97072998Z"
+    created: "2026-11-04T00:18:32.97209088Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -113,6 +132,6 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.6/javo-pack-0.2.0.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.8/javo-pack-0.2.0.tgz
     version: 0.2.0
-generated: "2026-11-03T21:07:44.967431957Z"
+generated: "2026-11-04T00:18:32.967659224Z"

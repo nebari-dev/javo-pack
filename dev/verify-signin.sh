@@ -110,7 +110,7 @@ if [ "${APP_CHECK:-1}" = 1 ]; then
   # NetworkPolicy probe has seen the policy enforced. The first probe runs as
   # Javo starts and can end Unknown; it tries again after 30 s, then 60 s.
   for try in $(seq 1 12); do
-    c -o "$work/app.json" -w '%{http_code}' -H 'Content-Type: application/json' \
+    c -o "$work/app.json" -w '%{http_code}' -H 'Content-Type: application/json' -H 'X-Javo-Request: 1' \
       -d "{\"displayName\":\"Pack check $(date +%s)\",\"template\":\"container\",\"image\":\"$APP_IMAGE\",\"port\":8080}" \
       "https://$UI/api/workspaces" >"$work/code"
     grep -q 'does not enforce NetworkPolicy' "$work/app.json" || break
@@ -137,6 +137,6 @@ if [ "${APP_CHECK:-1}" = 1 ]; then
     && ok "$code" || die "$code at $final"
 
   step "Javo deletes the app"
-  code=$(c -o /dev/null -w '%{http_code}' -X DELETE "https://$UI/api/workspaces/$name")
+  code=$(c -o /dev/null -w '%{http_code}' -H 'X-Javo-Request: 1' -X DELETE "https://$UI/api/workspaces/$name")
   case "$code" in 200|202|204) ok "$code" ;; *) die "DELETE -> $code" ;; esac
 fi

@@ -12,9 +12,13 @@ out=$(mktemp)
 trap 'rm -f "$out"' EXIT
 failed=0
 
+# Javo refuses to render without ValidatingAdmissionPolicy, which every
+# supported cluster (Kubernetes 1.30+) serves; helm template sees no cluster.
+API_VERSIONS="--api-versions admissionregistration.k8s.io/v1/ValidatingAdmissionPolicy"
+
 # render <args>: helm template into $out; the check fails if it does not render.
 render() {
-  if ! helm template javo-pack . "$@" >"$out" 2>&1; then
+  if ! helm template javo-pack . $API_VERSIONS "$@" >"$out" 2>&1; then
     echo "FAIL: did not render: $*"; sed 's/^/  /' "$out"; failed=1; return 1
   fi
 }
@@ -35,7 +39,7 @@ lacks() {
 # fails <message> <args>: helm template refuses the values, saying message.
 fails() {
   msg=$1; shift
-  if helm template javo-pack . "$@" >"$out" 2>&1; then
+  if helm template javo-pack . $API_VERSIONS "$@" >"$out" 2>&1; then
     echo "FAIL: rendered, but should have failed: $*"; failed=1
   elif ! grep -qF -- "$msg" "$out"; then
     echo "FAIL: refused without '$msg': $*"; sed 's/^/  /' "$out"; failed=1
@@ -98,7 +102,8 @@ if render -n javo --set javo.config.urls.uiHost=hub.example.org \
 fi
 
 fails "global.domain" -n javo
-fails "javo.config.urls.uiHost is" $minimal --set javo.config.urls.uiHost=
+# The javo chart refuses an empty UI host before the pack's own check runs.
+fails "config.auth.oidc needs the UI's host" $minimal --set javo.config.urls.uiHost=
 fails "javo.config.auth.oidc.issuer is" $minimal --set javo.config.auth.oidc.issuer=
 fails "global.domain" -n javo --set javo.config.urls.uiHost=hub.example.org
 fails "clientID must be" $minimal --set javo.config.auth.oidc.clientID=wrong

@@ -40,11 +40,14 @@ jobs:
       - name: Helm lint
         run: helm lint . -n javo -f examples/nebari-values.yaml
 
+      # Javo refuses to render without ValidatingAdmissionPolicy, which every
+      # supported cluster (Kubernetes 1.30+) serves; helm template sees no
+      # cluster, so it is told.
       - name: Helm template (NebariApp enabled)
-        run: helm template javo-pack . -n javo -f examples/nebari-values.yaml
+        run: helm template javo-pack . -n javo -f examples/nebari-values.yaml --api-versions admissionregistration.k8s.io/v1/ValidatingAdmissionPolicy
 
       - name: Helm template (standalone, NebariApp disabled)
-        run: helm template javo-pack . -n javo --set nebariapp.enabled=false
+        run: helm template javo-pack . -n javo --set nebariapp.enabled=false --api-versions admissionregistration.k8s.io/v1/ValidatingAdmissionPolicy
 
       # What one domain derives, explicit values winning, and values that
       # would point Javo at a client or Secret the operator does not create

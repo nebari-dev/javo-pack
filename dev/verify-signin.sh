@@ -17,9 +17,10 @@ NS=${NAMESPACE:-javo}
 UI=${UI_HOST:-javo.nebari.local}
 APPS=${APPS_HOST:-javo-apps.nebari.local}
 KC_HOST=${KC_HOST:-keycloak-keycloakx-http.keycloak.svc.cluster.local}
-# The realm user the operator's dev setup script creates (dev-only defaults).
+# The realm user the operator's dev setup script creates; its password has
+# no default (make cluster sets it from KC_PASSWORD).
 KC_USER=${KC_USER:-admin}
-KC_PASSWORD=${KC_PASSWORD:-nebari-admin}
+KC_PASSWORD=${KC_PASSWORD:?set KC_PASSWORD to the password of the Keycloak realm user}
 GW_PORT=${GW_PORT:-18443}
 # The image of the test app (the nginx the static-site template uses).
 APP_IMAGE=${APP_IMAGE:-nginxinc/nginx-unprivileged:1.31.6-alpine-slim@sha256:ac4d9c7e457c6510b95ac72dd84b27f7cc68ecb9a83fbd44f05a6460cf08aba4}

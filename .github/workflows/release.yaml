@@ -1,5 +1,9 @@
 name: Release Chart
 
+# Publishes the pack from main only: the job runs only on refs/heads/main and
+# in the release environment (whose deployment rule admits only main). The
+# write token is never stored in .git/config; each step that needs it gets it
+# in its own environment.
 on:
   workflow_dispatch:
   push:
@@ -7,9 +11,14 @@ on:
     paths:
       - "Chart.yaml"
 
+permissions:
+  contents: read
+
 jobs:
   release:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
+    environment: release
     permissions:
       contents: write
 
@@ -18,19 +27,31 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Helm
-        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        uses: ./.github/actions/setup-helm
 
-      # oci://quay.io/nebari/charts/javo is public.
-      - name: Fetch the javo chart
-        run: helm dependency build .
+      # cosign v3.0.6, the release this installer version pins by sha256.
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+      # By the digest Chart.yaml names, after cosign checks the javo release
+      # workflow signed it and the image it names.
+      - name: Fetch and verify the javo chart
+        run: dev/fetch-javo-chart.sh
 
       - name: Get chart version
         id: chart
         run: |
-          echo "version=$(grep '^version:' Chart.yaml | awk '{print $2}')" >> "$GITHUB_OUTPUT"
-          echo "name=$(grep '^name:' Chart.yaml | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+          version=$(grep '^version:' Chart.yaml | awk '{print $2}')
+          name=$(grep '^name:' Chart.yaml | awk '{print $2}')
+          # Release tags are only javo-pack-X.Y.Z.
+          if ! printf '%s' "$version" | grep -Eqx '[0-9]+\.[0-9]+\.[0-9]+' || [ "$name" != javo-pack ]; then
+            echo "::error::Chart.yaml must name javo-pack at a version X.Y.Z, got $name $version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
 
       - name: Check if release exists
         id: check
@@ -48,13 +69,16 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         run: helm package .
 
+      # The tag is made on the commit this run checked out.
       - name: Create GitHub release
         if: steps.check.outputs.exists == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.chart.outputs.name }}-${{ steps.chart.outputs.version }}
-        run: gh release create "$TAG" --title "$TAG" --generate-notes ./*.tgz
+        run: gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes ./*.tgz
 
+      # The repository is public: gh-pages is read without the token, and
+      # the token is used only in the push URL, never written to .git/config.
       - name: Update Helm repo index
         if: steps.check.outputs.exists == 'false'
         env:
@@ -62,16 +86,15 @@ jobs:
           TAG: ${{ steps.chart.outputs.name }}-${{ steps.chart.outputs.version }}
         run: |
           set -euo pipefail
-          GH_PAGES_URL="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
-          REPO_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}"
+          REPO_GIT_URL="https://github.com/${GITHUB_REPOSITORY}.git"
+          REPO_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}"
 
           # Keep earlier releases in the index; bootstrap the branch on the first release.
-          if git ls-remote --exit-code --heads "${GH_PAGES_URL}" gh-pages >/dev/null 2>&1; then
-            git clone --depth 1 --branch gh-pages "${GH_PAGES_URL}" gh-pages
+          if git ls-remote --exit-code --heads "${REPO_GIT_URL}" gh-pages >/dev/null 2>&1; then
+            git clone --depth 1 --branch gh-pages "${REPO_GIT_URL}" gh-pages
           else
             mkdir -p gh-pages
             git -C gh-pages init -b gh-pages
-            git -C gh-pages remote add origin "${GH_PAGES_URL}"
           fi
 
           cp ./*.tgz gh-pages/
@@ -86,4 +109,4 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add index.yaml ./*.tgz
           git commit -m "Release ${TAG}"
-          git push origin gh-pages
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages

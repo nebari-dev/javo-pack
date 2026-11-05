@@ -24,7 +24,15 @@
 # After it is published, `helm dependency build ..` pulls it from GHCR instead.
 
 CLUSTER_NAME   ?= javo-pack-dev
-OPERATOR_REF   ?= v0.1.2
+# Third-party code and manifests the cluster setup runs, pinned by commit and
+# sha256 so a moved tag or a replaced file cannot change what runs:
+# nebari-operator v0.1.2 (git ls-remote ... 'refs/tags/v0.1.2^{}') and its
+# release's install.yaml, and MetalLB v0.14.8's manifest at the tag's commit.
+OPERATOR_REF   := v0.1.2
+OPERATOR_SHA   := 38447bf2323ee3398a9b667ad71fad2c40f54218
+OPERATOR_INSTALL_SHA256 := 7d65d40b8039d41fee349d9df0755a3907664236b9b35a9a4b2901bd16eb7e28
+METALLB_SHA    := 80fa562f23fdf05b578329adbcfc4c5da534760f
+METALLB_SHA256 := 11b5906021fde56040cf10d1bcbaf5c2b7a4206045ebb103915347dfcc533f0e
 CACHE_DIR      := .cache
 OPERATOR_REPO  := $(CACHE_DIR)/nebari-operator
 KUBECONFIG     := $(abspath $(CACHE_DIR))/kubeconfig
@@ -64,6 +72,9 @@ spec:
 endef
 export METALLB_POOL
 
+# fetch <url>,<sha256>,<file>: download url to file; fail unless it has that sha256.
+fetch = mkdir -p $(dir $(3)) && curl -fsSLo $(3) $(1) && echo "$(2)  $(3)" | shasum -a 256 -c -
+
 .PHONY: cluster vendor-javo load-image up verify down
 
 cluster:
@@ -75,10 +86,13 @@ cluster:
 
 _clone-operator:
 	@if [ ! -d "$(OPERATOR_REPO)" ]; then \
-		mkdir -p $(CACHE_DIR); \
-		git clone --depth 1 --branch $(OPERATOR_REF) \
-			https://github.com/nebari-dev/nebari-operator.git $(OPERATOR_REPO); \
+		mkdir -p $(OPERATOR_REPO) && \
+		git -C $(OPERATOR_REPO) init -q && \
+		git -C $(OPERATOR_REPO) fetch -q --depth 1 https://github.com/nebari-dev/nebari-operator.git $(OPERATOR_SHA) && \
+		git -C $(OPERATOR_REPO) checkout -q FETCH_HEAD; \
 	fi
+	@test "$$(git -C $(OPERATOR_REPO) rev-parse HEAD)" = "$(OPERATOR_SHA)" || \
+		{ echo "$(OPERATOR_REPO) is not at $(OPERATOR_SHA) ($(OPERATOR_REF)): delete it and run make cluster again"; exit 1; }
 
 _kind-create:
 	mkdir -p $(CACHE_DIR)
@@ -88,7 +102,8 @@ _kind-create:
 	docker exec $(CLUSTER_NAME)-control-plane sysctl -w fs.inotify.max_user_instances=1024
 
 _metallb:
-	kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+	$(call fetch,https://raw.githubusercontent.com/metallb/metallb/$(METALLB_SHA)/config/manifests/metallb-native.yaml,$(METALLB_SHA256),$(CACHE_DIR)/metallb-native.yaml)
+	kubectl apply -f $(CACHE_DIR)/metallb-native.yaml
 	kubectl wait -n metallb-system --for=condition=available deployment/controller --timeout=120s
 	kubectl wait -n metallb-system --for=jsonpath='{.status.numberReady}'=1 daemonset/speaker --timeout=120s
 	@KIND_NET_CIDR=$$(docker network inspect kind -f '{{range .IPAM.Config}}{{.Subnet}}{{"\n"}}{{end}}' | grep '\.' | head -n1); \
@@ -101,11 +116,15 @@ _metallb:
 _services:
 	CLUSTER_NAME=$(CLUSTER_NAME) $(OPERATOR_REPO)/dev/scripts/services/install.sh
 
+# The realm user's password is KC_PASSWORD (verify-signin.sh signs in with
+# it); there is no default.
 _keycloak-setup:
-	CLUSTER_NAME=$(CLUSTER_NAME) $(OPERATOR_REPO)/dev/scripts/services/keycloak/setup.sh
+	@test -n "$$KC_PASSWORD" || { echo "set KC_PASSWORD to the password the Keycloak realm user gets (verify-signin.sh signs in with it)"; exit 1; }
+	CLUSTER_NAME=$(CLUSTER_NAME) REALM_ADMIN_PASSWORD="$$KC_PASSWORD" $(OPERATOR_REPO)/dev/scripts/services/keycloak/setup.sh
 
 _operator:
-	kubectl apply -f https://github.com/nebari-dev/nebari-operator/releases/download/$(OPERATOR_REF)/install.yaml
+	$(call fetch,https://github.com/nebari-dev/nebari-operator/releases/download/$(OPERATOR_REF)/install.yaml,$(OPERATOR_INSTALL_SHA256),$(CACHE_DIR)/nebari-operator-install.yaml)
+	kubectl apply -f $(CACHE_DIR)/nebari-operator-install.yaml
 	kubectl wait --for=condition=available deployment/nebari-operator-controller-manager \
 		-n nebari-operator-system --timeout=180s
 

@@ -31,11 +31,15 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Helm
-        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        uses: ./.github/actions/setup-helm
 
-      # oci://quay.io/nebari/charts/javo is public.
-      - name: Fetch the javo chart
-        run: helm dependency build .
+      # cosign v3.0.6, the release this installer version pins by sha256.
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+      # oci://quay.io/nebari/charts/javo is public. By the digest Chart.yaml
+      # names, after cosign checks the javo release workflow signed it.
+      - name: Fetch and verify the javo chart
+        run: dev/fetch-javo-chart.sh
 
       - name: Helm lint
         run: helm lint . -n javo -f examples/nebari-values.yaml

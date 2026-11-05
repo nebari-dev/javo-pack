@@ -9,6 +9,10 @@ home: https://github.com/nebari-dev/javo-pack
 sources:
   - https://github.com/nebari-dev/javo-pack
   - https://github.com/nebari-dev/javo
+annotations:
+  # The OCI digest of the javo chart below (quay.io/nebari/charts/javo),
+  # which CI and the release pull and cosign-verify (dev/fetch-javo-chart.sh).
+  javo.nebari.dev/chart-digest: sha256:c70407575ce1c675257658d353b87b5843e26e34eecfc6a0e7e35601e649f8e1
 dependencies:
   # Published by the javo repository's release workflow (see README,
   # "Publishing Javo"). Until then, vendor it locally: make -C dev vendor-javo.

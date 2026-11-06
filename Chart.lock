@@ -1,6 +1,6 @@
 dependencies:
 - name: javo
   repository: oci://quay.io/nebari/charts
-  version: 0.2.35
-digest: sha256:eedf00220cd6be6190d673090c263e3c4217cb0e017b51bae9ff2c85c709ec6c
-generated: "2026-11-06T09:08:30.743059Z"
+  version: 0.2.36
+digest: sha256:90ddcc1dfeee6fd278d4971dea0d8d771e07221a2b0177ea72fe537b0f2891a5
+generated: "2026-11-06T09:36:34.151084Z"

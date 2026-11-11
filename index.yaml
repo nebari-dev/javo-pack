@@ -2,10 +2,31 @@ apiVersion: v1
 entries:
   javo-pack:
   - annotations:
+      javo.nebari.dev/chart-digest: sha256:9330f4c1020ae018ec1716444fbdc9e7db5d586c9f37e39da5c96aab38f17321
+    apiVersion: v2
+    appVersion: 0.2.42
+    created: "2026-11-11T10:53:24.063318684Z"
+    dependencies:
+    - name: javo
+      repository: oci://quay.io/nebari/charts
+      version: 0.2.42
+    description: Javo (apps, notebooks and jobs for teams) on Nebari, with routing,
+      TLS and Keycloak sign-in from the nebari-operator
+    digest: 48b7ea3fa41ae20327f1cc46c036efc98e246e91a9a1e0f71c3170aefde1e407
+    home: https://github.com/nebari-dev/javo-pack
+    name: javo-pack
+    sources:
+    - https://github.com/nebari-dev/javo-pack
+    - https://github.com/nebari-dev/javo
+    type: application
+    urls:
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.42.tgz
+    version: 0.2.42
+  - annotations:
       javo.nebari.dev/chart-digest: sha256:b4817e28feb4e5301f366b7058628720659aa7c18476b7c682208448f530d520
     apiVersion: v2
     appVersion: 0.2.41
-    created: "2026-11-06T13:26:12.019630142Z"
+    created: "2026-11-11T10:53:24.061378218Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -20,13 +41,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.41.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.41.tgz
     version: 0.2.41
   - annotations:
       javo.nebari.dev/chart-digest: sha256:6bc72ac2a3fb56fd81041f014753d60219d672b0069e50160ebc6f92de26f26c
     apiVersion: v2
     appVersion: 0.2.40
-    created: "2026-11-06T13:26:12.017725201Z"
+    created: "2026-11-11T10:53:24.05871032Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -41,13 +62,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.40.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.40.tgz
     version: 0.2.40
   - annotations:
       javo.nebari.dev/chart-digest: sha256:aa063c7879907a299bd3d283dec7e0e07bee7f30591fcc3ce7754ee57f29c627
     apiVersion: v2
     appVersion: 0.2.39
-    created: "2026-11-06T13:26:12.013370367Z"
+    created: "2026-11-11T10:53:24.054837501Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -62,13 +83,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.39.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.39.tgz
     version: 0.2.39
   - annotations:
       javo.nebari.dev/chart-digest: sha256:cd5ff56f594aa16a0bae13ff8a09edbab86c03572de684f9afb38418ae16d33f
     apiVersion: v2
     appVersion: 0.2.38
-    created: "2026-11-06T13:26:12.011565586Z"
+    created: "2026-11-11T10:53:24.052875753Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -83,13 +104,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.38.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.38.tgz
     version: 0.2.38
   - annotations:
       javo.nebari.dev/chart-digest: sha256:9635e70ce980592103c3ebf197fc9c8f725a19a08042df71765fa85f0a2ec469
     apiVersion: v2
     appVersion: 0.2.37
-    created: "2026-11-06T13:26:12.009237747Z"
+    created: "2026-11-11T10:53:24.050955297Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -104,13 +125,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.37.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.37.tgz
     version: 0.2.37
   - annotations:
       javo.nebari.dev/chart-digest: sha256:5418b1ee170d0284dc92e4653fcb3e9ffe8ce587dcf2face0002b3f2259b8531
     apiVersion: v2
     appVersion: 0.2.36
-    created: "2026-11-06T13:26:12.007376652Z"
+    created: "2026-11-11T10:53:24.048098769Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -125,13 +146,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.36.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.36.tgz
     version: 0.2.36
   - annotations:
       javo.nebari.dev/chart-digest: sha256:db3ab4b0c31b32e8caa4086abc6a049477ba4faa29cb73bf6a2158877ffd0e22
     apiVersion: v2
     appVersion: 0.2.35
-    created: "2026-11-06T13:26:12.005403518Z"
+    created: "2026-11-11T10:53:24.046257062Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -146,13 +167,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.35.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.35.tgz
     version: 0.2.35
   - annotations:
       javo.nebari.dev/chart-digest: sha256:a20ec9e496ef8a8c0a6e0cb1dca8c995b9be5e812cb947cc1b6a5064259deda2
     apiVersion: v2
     appVersion: 0.2.34
-    created: "2026-11-06T13:26:12.002779763Z"
+    created: "2026-11-11T10:53:24.044370788Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -167,13 +188,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.34.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.34.tgz
     version: 0.2.34
   - annotations:
       javo.nebari.dev/chart-digest: sha256:f4dd4446bc9d1ba3b18e238f135b8c89bccc9802866f2edea854e8c7daa79f1d
     apiVersion: v2
     appVersion: 0.2.33
-    created: "2026-11-06T13:26:12.000878127Z"
+    created: "2026-11-11T10:53:24.041712526Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -188,13 +209,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.33.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.33.tgz
     version: 0.2.33
   - annotations:
       javo.nebari.dev/chart-digest: sha256:5d988acfba61b1d3f5186342cf986ae64f136ead16f2d4459aa9daf942dcb36f
     apiVersion: v2
     appVersion: 0.2.32
-    created: "2026-11-06T13:26:11.998492647Z"
+    created: "2026-11-11T10:53:24.039855956Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -209,13 +230,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.32.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.32.tgz
     version: 0.2.32
   - annotations:
       javo.nebari.dev/chart-digest: sha256:8921e3e1347e38cea4a5d900de627df3216b9a783220e6b292d42f1e74d04579
     apiVersion: v2
     appVersion: 0.2.31
-    created: "2026-11-06T13:26:11.996566373Z"
+    created: "2026-11-11T10:53:24.037472326Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -230,13 +251,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.31.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.31.tgz
     version: 0.2.31
   - annotations:
       javo.nebari.dev/chart-digest: sha256:d1d91f191041c31dfa2d8680339078ebea5a9ac9435bd422e6f1a05489711047
     apiVersion: v2
     appVersion: 0.2.30
-    created: "2026-11-06T13:26:11.994671948Z"
+    created: "2026-11-11T10:53:24.03555789Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -251,13 +272,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.30.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.30.tgz
     version: 0.2.30
   - annotations:
       javo.nebari.dev/chart-digest: sha256:cd13289e84f783779a25487889ca06653d9bf34cda7feebd8c88299699b4bf9a
     apiVersion: v2
     appVersion: 0.2.29
-    created: "2026-11-06T13:26:11.991663683Z"
+    created: "2026-11-11T10:53:24.033599367Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -272,13 +293,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.29.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.29.tgz
     version: 0.2.29
   - annotations:
       javo.nebari.dev/chart-digest: sha256:d0c1550814932281470e196814f6e6867a9f75fd3b06235c0d26f7e8f162697a
     apiVersion: v2
     appVersion: 0.2.28
-    created: "2026-11-06T13:26:11.98973109Z"
+    created: "2026-11-11T10:53:24.030873828Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -293,13 +314,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.28.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.28.tgz
     version: 0.2.28
   - annotations:
       javo.nebari.dev/chart-digest: sha256:a3e0ea56451ffd5a5ae97f7fcc6758a6ce0879f82ccfd3c7156b4a8e408cac37
     apiVersion: v2
     appVersion: 0.2.27
-    created: "2026-11-06T13:26:11.987158357Z"
+    created: "2026-11-11T10:53:24.028983287Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -314,13 +335,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.27.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.27.tgz
     version: 0.2.27
   - annotations:
       javo.nebari.dev/chart-digest: sha256:ba15e7478264c0c4c847bd601951945f40ab6ddba7fe8cc3eda0a9564cff04c7
     apiVersion: v2
     appVersion: 0.2.26
-    created: "2026-11-06T13:26:11.985234097Z"
+    created: "2026-11-11T10:53:24.026897041Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -335,13 +356,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.26.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.26.tgz
     version: 0.2.26
   - annotations:
       javo.nebari.dev/chart-digest: sha256:ddaa0ade23fef61ac8ae0acffbec8c3697ff61e6f0fbac1362f2bcfd068df2e3
     apiVersion: v2
     appVersion: 0.2.25
-    created: "2026-11-06T13:26:11.98329225Z"
+    created: "2026-11-11T10:53:24.024299735Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -356,13 +377,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.25.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.25.tgz
     version: 0.2.25
   - annotations:
       javo.nebari.dev/chart-digest: sha256:cb1b6b042db26508b4cd2942f98438d00845310cfd1186274f915b382e4682fe
     apiVersion: v2
     appVersion: 0.2.24
-    created: "2026-11-06T13:26:11.980687634Z"
+    created: "2026-11-11T10:53:24.022424868Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -377,13 +398,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.24.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.24.tgz
     version: 0.2.24
   - annotations:
       javo.nebari.dev/chart-digest: sha256:7d3ee9e44b1f5d7ada7ea08be08134222235ea09c688a7654cfaf9a544401479
     apiVersion: v2
     appVersion: 0.2.23
-    created: "2026-11-06T13:26:11.978779307Z"
+    created: "2026-11-11T10:53:24.019851998Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -398,13 +419,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.23.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.23.tgz
     version: 0.2.23
   - annotations:
       javo.nebari.dev/chart-digest: sha256:76e13451391d681599a06a023a66ee0a5c5edbcc9fab463a4c6f7caa6088a4e9
     apiVersion: v2
     appVersion: 0.2.22
-    created: "2026-11-06T13:26:11.976266329Z"
+    created: "2026-11-11T10:53:24.018041097Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -419,13 +440,13 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.22.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.22.tgz
     version: 0.2.22
   - annotations:
       javo.nebari.dev/chart-digest: sha256:a6e93149633e36d02b6dd1aa4c89b5fe418ac050c82b8f6713babb4e28d3847a
     apiVersion: v2
     appVersion: 0.2.21
-    created: "2026-11-06T13:26:11.97436971Z"
+    created: "2026-11-11T10:53:24.0161461Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -440,11 +461,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.21.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.21.tgz
     version: 0.2.21
   - apiVersion: v2
     appVersion: 0.2.20
-    created: "2026-11-06T13:26:11.972438809Z"
+    created: "2026-11-11T10:53:24.01344644Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -459,11 +480,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.20.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.20.tgz
     version: 0.2.20
   - apiVersion: v2
     appVersion: 0.2.19
-    created: "2026-11-06T13:26:11.968155062Z"
+    created: "2026-11-11T10:53:24.009388692Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -478,11 +499,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.19.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.19.tgz
     version: 0.2.19
   - apiVersion: v2
     appVersion: 0.2.18
-    created: "2026-11-06T13:26:11.965815336Z"
+    created: "2026-11-11T10:53:24.007499253Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -497,11 +518,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.18.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.18.tgz
     version: 0.2.18
   - apiVersion: v2
     appVersion: 0.2.17
-    created: "2026-11-06T13:26:11.963996905Z"
+    created: "2026-11-11T10:53:24.00561422Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -516,11 +537,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.17.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.17.tgz
     version: 0.2.17
   - apiVersion: v2
     appVersion: 0.2.16
-    created: "2026-11-06T13:26:11.962101368Z"
+    created: "2026-11-11T10:53:24.00289797Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -535,11 +556,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.16.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.16.tgz
     version: 0.2.16
   - apiVersion: v2
     appVersion: 0.2.15
-    created: "2026-11-06T13:26:11.959415249Z"
+    created: "2026-11-11T10:53:24.001071556Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -554,11 +575,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.15.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.15.tgz
     version: 0.2.15
   - apiVersion: v2
     appVersion: 0.2.14
-    created: "2026-11-06T13:26:11.957561144Z"
+    created: "2026-11-11T10:53:23.998591256Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -573,11 +594,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.14.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.14.tgz
     version: 0.2.14
   - apiVersion: v2
     appVersion: 0.2.13
-    created: "2026-11-06T13:26:11.955292014Z"
+    created: "2026-11-11T10:53:23.996767987Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -592,11 +613,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.13.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.13.tgz
     version: 0.2.13
   - apiVersion: v2
     appVersion: 0.2.12
-    created: "2026-11-06T13:26:11.953320031Z"
+    created: "2026-11-11T10:53:23.994823425Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -611,11 +632,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.12.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.12.tgz
     version: 0.2.12
   - apiVersion: v2
     appVersion: 0.2.11
-    created: "2026-11-06T13:26:11.951363302Z"
+    created: "2026-11-11T10:53:23.991691586Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -630,11 +651,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.11.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.11.tgz
     version: 0.2.11
   - apiVersion: v2
     appVersion: 0.2.10
-    created: "2026-11-06T13:26:11.948804415Z"
+    created: "2026-11-11T10:53:23.989939595Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -649,11 +670,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.10.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.10.tgz
     version: 0.2.10
   - apiVersion: v2
     appVersion: 0.2.9
-    created: "2026-11-06T13:26:12.028155893Z"
+    created: "2026-11-11T10:53:24.070603303Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -668,11 +689,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.9.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.9.tgz
     version: 0.2.9
   - apiVersion: v2
     appVersion: 0.2.8
-    created: "2026-11-06T13:26:12.025674533Z"
+    created: "2026-11-11T10:53:24.068818201Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -687,11 +708,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.8.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.8.tgz
     version: 0.2.8
   - apiVersion: v2
     appVersion: 0.2.6
-    created: "2026-11-06T13:26:12.023683091Z"
+    created: "2026-11-11T10:53:24.067161653Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -706,11 +727,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.6.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.6.tgz
     version: 0.2.6
   - apiVersion: v2
     appVersion: 0.2.5
-    created: "2026-11-06T13:26:12.022009669Z"
+    created: "2026-11-11T10:53:24.064996715Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -725,11 +746,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.5.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.5.tgz
     version: 0.2.5
   - apiVersion: v2
     appVersion: 0.2.4
-    created: "2026-11-06T13:26:12.015773158Z"
+    created: "2026-11-11T10:53:24.056857186Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -744,11 +765,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.4.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.4.tgz
     version: 0.2.4
   - apiVersion: v2
     appVersion: 0.2.2
-    created: "2026-11-06T13:26:11.969784268Z"
+    created: "2026-11-11T10:53:24.011590351Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -763,11 +784,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.2.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.2.tgz
     version: 0.2.2
   - apiVersion: v2
     appVersion: 0.2.1
-    created: "2026-11-06T13:26:11.947078403Z"
+    created: "2026-11-11T10:53:23.987480092Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -782,11 +803,11 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.1.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.1.tgz
     version: 0.2.1
   - apiVersion: v2
     appVersion: 0.2.0
-    created: "2026-11-06T13:26:11.945036646Z"
+    created: "2026-11-11T10:53:23.985508028Z"
     dependencies:
     - name: javo
       repository: oci://quay.io/nebari/charts
@@ -801,6 +822,6 @@ entries:
     - https://github.com/nebari-dev/javo
     type: application
     urls:
-    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.41/javo-pack-0.2.0.tgz
+    - https://github.com/nebari-dev/javo-pack/releases/download/javo-pack-0.2.42/javo-pack-0.2.0.tgz
     version: 0.2.0
-generated: "2026-11-06T13:26:11.942314072Z"
+generated: "2026-11-11T10:53:23.98356563Z"

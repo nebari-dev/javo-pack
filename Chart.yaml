@@ -2,9 +2,9 @@ apiVersion: v2
 name: javo-pack
 description: Javo (apps, notebooks and jobs for teams) on Nebari, with routing, TLS and Keycloak sign-in from the nebari-operator
 type: application
-version: 0.2.48
+version: 0.2.49
 # Version of Javo shipped by the javo dependency pinned below.
-appVersion: "0.2.48"
+appVersion: "0.2.49"
 home: https://github.com/nebari-dev/javo-pack
 sources:
   - https://github.com/nebari-dev/javo-pack
@@ -12,10 +12,10 @@ sources:
 annotations:
   # The OCI digest of the javo chart below (quay.io/nebari/charts/javo),
   # which CI and the release pull and cosign-verify (dev/fetch-javo-chart.sh).
-  javo.nebari.dev/chart-digest: sha256:90e5f5003747390b3d18316881f863e342095b4c23a12c8b6b4b6f2bbc471a10
+  javo.nebari.dev/chart-digest: sha256:593976a3c474f0584c16a468b28e09afdd376bd902a11d99e2f1143ea62a9cc4
 dependencies:
   # Published by the javo repository's release workflow (see README,
   # "Publishing Javo"). Until then, vendor it locally: make -C dev vendor-javo.
   - name: javo
-    version: 0.2.48
+    version: 0.2.49
     repository: oci://quay.io/nebari/charts
